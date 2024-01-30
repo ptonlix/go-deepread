@@ -38,9 +38,9 @@ func (d *DeepReadApp) AddUser(user *User) (*Welcome, error) {
 }
 
 // DeleteUser 删除微信用户
-func (d *DeepReadApp) DeleteUser(externalUserid string) error {
+func (d *DeepReadApp) DeleteUser(unionid string) error {
 	_, err := d.execUserDelete(reqUserDelete{
-		ExternalUserid: externalUserid})
+		Unionid: unionid})
 	if err != nil {
 		return err
 	}

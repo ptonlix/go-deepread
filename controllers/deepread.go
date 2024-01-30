@@ -87,11 +87,18 @@ func (dr *DeepReadController) WelcomeFlow(userId, externalUserID, welcomeCode st
 	return nil
 }
 
-func (dr *DeepReadController) DeleteUserFlow(externalUserID string) error {
-	if err := dr.DrServer.DrClient.DeleteUser(externalUserID); err != nil {
+func (dr *DeepReadController) DeleteUserFlow(externalUserid string) error {
+	// 查找用户详情
+	userInfo, err := dr.DrServer.WwClient.GetUserInfo(externalUserid)
+	if err != nil {
+		logs.Error("WelcomeFlow GetUserInfo failed: ", err)
+		return err
+	}
+
+	if err := dr.DrServer.DrClient.DeleteUser(userInfo.ExternalContact.Unionid); err != nil {
 		logs.Error("DeleteUserFlow DeleteUser failed: ", err)
 		return err
 	}
-	logs.Info("DeleteUserFlow Successfully failed: ", externalUserID)
+	logs.Info("DeleteUserFlow Successfully failed: ", userInfo.ExternalContact.Unionid)
 	return nil
 }

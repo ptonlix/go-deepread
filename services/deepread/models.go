@@ -54,13 +54,13 @@ type respUserAdd struct {
 
 // reqUserUpdate 更新成员请求
 type reqUserDelete struct {
-	ExternalUserid string `json:"external_userid"`
+	Unionid string `json:"unionid"`
 }
 
 var _ bodyer = reqUserAdd{}
 
 func (x reqUserDelete) intoBody() ([]byte, error) {
-	return marshalIntoJSONBody(x.ExternalUserid)
+	return marshalIntoJSONBody(x.Unionid)
 }
 
 // respUserUpdate 更新成员响应
