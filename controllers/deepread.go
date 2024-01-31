@@ -65,6 +65,7 @@ func (dr *DeepReadController) WelcomeFlow(userId, externalUserID, welcomeCode st
 		Avatar:         userInfo.ExternalContact.Avatar,
 		Gender:         int(userInfo.ExternalContact.Gender),
 		Unionid:        userInfo.ExternalContact.Unionid,
+		MsgType:        "subscribe",
 	})
 	if err != nil {
 		logs.Error("WelcomeFlow AddUser failed: ", err)

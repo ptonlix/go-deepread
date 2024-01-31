@@ -54,7 +54,8 @@ type respUserAdd struct {
 
 // reqUserUpdate 更新成员请求
 type reqUserDelete struct {
-	Unionid string `json:"unionid"`
+	Unionid string `json:"unionId"`
+	MsgType string `json:"msgType"`
 }
 
 var _ bodyer = reqUserAdd{}

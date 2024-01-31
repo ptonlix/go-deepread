@@ -27,7 +27,7 @@ docker run -p 6379:6379 --name redis \
 
 # 运行容器
 docker run -itd -p 8800:8800 --restart always -v /root/go-deepread/conf:/app/conf ptonlix/go-deepdread:v0.0.5
-docker run -itd -p 8800:8800 --restart always -v ./conf:/app/conf -v ./log/:app/log ptonlix/go-deepdread:v0.0.5
+docker run -itd -p 8800:8800 --restart always -v ./conf:/app/conf -v ./log:/app/log ptonlix/go-deepdread:v0.0.5
 
 # 查看日志
 docker logs -f 6b05e1c81380
