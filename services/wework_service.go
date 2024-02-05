@@ -43,7 +43,7 @@ func (w *WeWorkService) UpdateUser(userId, externalUserId, unionId string) error
 
 func (w *WeWorkService) SendWelcome(welcomeCode, welcomeText, title, picurl, desc, url string) error {
 
-	att := workwx.Attachments{Link: workwx.Link{Title: title, PicURL: picurl, Desc: desc, URL: url}}
+	att := workwx.Attachments{MsgType: workwx.AttachmentMsgTypeLink, Link: workwx.Link{Title: title, PicURL: picurl, Desc: desc, URL: url}}
 
 	if err := w.app.SendWelcomeMsg(welcomeCode, workwx.Text{Content: welcomeText}, []workwx.Attachments{att}); err != nil {
 		logs.Error("SendWelcomeMsg is failed!:", err)

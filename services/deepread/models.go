@@ -52,6 +52,22 @@ type respUserAdd struct {
 	Data Welcome `json:"data"`
 }
 
+// IsOK 响应体是否为一次成功请求的响应
+func (r *respUserAdd) IsOK() bool {
+	return r.Code == 1000
+}
+
+func (r *respUserAdd) TryIntoErr() error {
+	if r.IsOK() {
+		return nil
+	}
+
+	return &DeepReadClientError{
+		Code: r.Code,
+		Msg:  r.Msg,
+	}
+}
+
 // reqUserUpdate 更新成员请求
 type reqUserDelete struct {
 	Unionid string `json:"unionId"`
@@ -61,11 +77,27 @@ type reqUserDelete struct {
 var _ bodyer = reqUserAdd{}
 
 func (x reqUserDelete) intoBody() ([]byte, error) {
-	return marshalIntoJSONBody(x.Unionid)
+	return marshalIntoJSONBody(x)
 }
 
 // respUserUpdate 更新成员响应
 type respUserDelete struct {
 	respCommon
-	Data string `json:"data"`
+	Data interface{} `json:"data"`
+}
+
+// IsOK 响应体是否为一次成功请求的响应
+func (r *respUserDelete) IsOK() bool {
+	return r.Code == 4000
+}
+
+func (r *respUserDelete) TryIntoErr() error {
+	if r.IsOK() {
+		return nil
+	}
+
+	return &DeepReadClientError{
+		Code: r.Code,
+		Msg:  r.Msg,
+	}
 }

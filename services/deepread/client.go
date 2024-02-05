@@ -4,8 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
+
+	"github.com/beego/beego/v2/adapter/logs"
 )
 
 type DeepReadApp struct {
@@ -77,7 +81,7 @@ func (d *DeepReadApp) executeDrapiGet(path string, req urlValuer, respObj interf
 		return err
 	}
 	if withAccessToken {
-		request.Header.Add("Authorization", d.accessToken)
+		request.Header.Add("wx-cp-auth", d.accessToken)
 	}
 	resp, err := d.opts.HTTP.Do(request)
 
@@ -106,21 +110,29 @@ func (d *DeepReadApp) executeDrapiJSONPost(path string, req bodyer, respObj inte
 	if err != nil {
 		return makeReqMarshalErr(err)
 	}
+
+	logs.Debug("req: ", string(body))
+
 	request, err := http.NewRequest("POST", urlStr, bytes.NewReader(body))
 	if err != nil {
 		return err
 	}
 	request.Header.Add("Content-Type", "application/json")
 	if withAccessToken {
-		request.Header.Add("Authorization", d.accessToken)
+		request.Header.Add("wx-cp-auth", d.accessToken)
 	}
 	resp, err := d.opts.HTTP.Do(request)
 	if err != nil {
 		return makeRequestErr(err)
 	}
 	defer resp.Body.Close()
+	bodyBytes, _ := ioutil.ReadAll(resp.Body) // 读取响应体数据
+	responseString := string(bodyBytes)
 
-	decoder := json.NewDecoder(resp.Body)
+	logs.Debug("resp: ", responseString)
+	readio := strings.NewReader(responseString)
+	//decoder := json.NewDecoder(resp.Body)
+	decoder := json.NewDecoder(readio)
 	err = decoder.Decode(respObj)
 	if err != nil {
 		return makeRespUnmarshalErr(err)

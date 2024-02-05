@@ -35,9 +35,6 @@ func (dr *DeepReadController) OnIncomingMessage(msg *workwx.RxMessage) error {
 		if data, flag := msg.EventDelExternalContact(); flag {
 			go dr.DeleteUserFlow(data.GetExternalUserID())
 		}
-		if data, flag := msg.EventDelFollowUser(); flag {
-			go dr.DeleteUserFlow(data.GetExternalUserID())
-		}
 	}
 
 	return nil
@@ -55,7 +52,7 @@ func (dr *DeepReadController) WelcomeFlow(userId, externalUserID, welcomeCode st
 	// 查找用户详情
 	userInfo, err := dr.DrServer.WwClient.GetUserInfo(externalUserID)
 	if err != nil {
-		logs.Error("WelcomeFlow GetUserInfo failed: ", err)
+		logs.Error("WelcomeFlow GetUserInfo failed: externalUserid:", externalUserID, "err:", err)
 		return err
 	}
 	// 添加用户
@@ -68,23 +65,24 @@ func (dr *DeepReadController) WelcomeFlow(userId, externalUserID, welcomeCode st
 		MsgType:        "subscribe",
 	})
 	if err != nil {
-		logs.Error("WelcomeFlow AddUser failed: ", err)
+		logs.Error("WelcomeFlow AddUser failed: Unionid:", userInfo.ExternalContact.Unionid, "err:", err)
 		return err
 	}
 	// 更新用户备注
 	go func() {
 		if err := dr.DrServer.WwClient.UpdateUser(userId, externalUserID, userInfo.ExternalContact.Unionid); err != nil {
-			logs.Error("WelcomeFlow UpdateUser failed: ", err)
+			logs.Error("WelcomeFlow UpdateUser failed: externalUserID:", externalUserID, "err:", err)
 		}
 	}()
 
+	welcomeUrl := welcomeData.URL + "/?deepread_unionid=" + userInfo.ExternalContact.Unionid
 	// 发送欢迎语
-	err = dr.DrServer.WwClient.SendWelcome(welcomeCode, welcomeData.Text, welcomeData.Title, welcomeData.PicURL, welcomeData.Desc, welcomeData.URL)
+	err = dr.DrServer.WwClient.SendWelcome(welcomeCode, welcomeData.Text, welcomeData.Title, welcomeData.PicURL, welcomeData.Desc, welcomeUrl)
 	if err != nil {
 		logs.Error("WelcomeFlow SendWelcome failed: ", err)
 		return err
 	}
-	logs.Info("WelcomeFlow Successfully : ", externalUserID)
+	logs.Info("WelcomeFlow Successfully externalUserID:", externalUserID)
 	return nil
 }
 
@@ -92,14 +90,14 @@ func (dr *DeepReadController) DeleteUserFlow(externalUserid string) error {
 	// 查找用户详情
 	userInfo, err := dr.DrServer.WwClient.GetUserInfo(externalUserid)
 	if err != nil {
-		logs.Error("WelcomeFlow GetUserInfo failed: ", err)
+		logs.Error("DeleteUserFlow GetUserInfo failed: externalUserid:", externalUserid, "err:", err)
 		return err
 	}
 
 	if err := dr.DrServer.DrClient.DeleteUser(userInfo.ExternalContact.Unionid); err != nil {
-		logs.Error("DeleteUserFlow DeleteUser failed: ", err)
+		logs.Error("DeleteUserFlow DeleteUser failed: Unionid:", userInfo.ExternalContact.Unionid, "err:", err)
 		return err
 	}
-	logs.Info("DeleteUserFlow Successfully failed: ", userInfo.ExternalContact.Unionid)
+	logs.Info("DeleteUserFlow Successfully Unionid: ", userInfo.ExternalContact.Unionid)
 	return nil
 }
