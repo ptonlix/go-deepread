@@ -4,13 +4,14 @@ GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOGET=$(GOCMD) get
+PROJECT_NAME=GoDeepRead
 BINARY_NAME=go-deepread
 BINARY_UNIX=$(BINARY_NAME)_unix
 CONFPATH=./conf/app.conf
-FRONTENDSOURCE=static
+SHPATH=./run_go-deepread.sh
 
 APP_NAME=${BINARY_NAME}
-APP_VERSION= 0.0.1v
+APP_VERSION= v0.8.1b
 BUILD_VERSION=$(shell git log -1 --oneline)
 BUILD_TIME=$(shell date )
 GIT_REVISION=$(shell git rev-parse --short HEAD)
@@ -26,14 +27,14 @@ VERSIONINFO = "-s -X 'main.AppName=${APP_NAME}' \
 
 define packconfig
 	@echo "package config ......."
-	mkdir package
-	mkdir package/conf
-	mkdir package/log
-	mv $(BINARY_NAME) ./package/
-	cp $(CONFPATH) package/conf/
-	cp -r $(FRONTENDSOURCE) package/
-	tar -zcvf ${BINARY_NAME}-$(APP_VERSION).tar.gz package
-	rm -rf package
+	mkdir $(PROJECT_NAME)
+	mkdir $(PROJECT_NAME)/conf
+	mkdir $(PROJECT_NAME)/log
+	mv $(BINARY_NAME) ./$(PROJECT_NAME)/
+	cp $(CONFPATH) $(PROJECT_NAME)/conf/
+	cp -r $(SHPATH) $(PROJECT_NAME)/
+	tar -zcvf ${BINARY_NAME}-$(APP_VERSION).tar.gz $(PROJECT_NAME)
+	rm -rf $(PROJECT_NAME)
 endef
 all: test build
 build:
