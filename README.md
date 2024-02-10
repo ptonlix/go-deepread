@@ -32,3 +32,19 @@ docker run -itd -p 8800:8800 --restart always -v ./conf:/app/conf -v ./log:/app/
 # 查看日志
 docker logs -f 6b05e1c81380
 ```
+
+## 配置开机自启动
+
+```
+#  /usr/lib/systemd/system/go-deepread.service
+[Unit]
+Description=go-deepread
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/bash /root/wework-server/GoDeepRead/run_go-deepread.sh
+
+[Install]
+WantedBy=multi-user.target
+```
